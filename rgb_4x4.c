@@ -38,7 +38,8 @@ void send_1_4x4_rgb(void);  /* Sends signal for 1 */
 void send_0_4x4_rgb(void);  /* Sends signal for 0 */
 void IN1_HIGH(void);        /* Set IN1 HIGH */
 void IN1_LOW(void);         /* Set IN1 LOW */
-void delay(unsigned int j);  /* Delays for a number of time */
+void delay(unsigned int j); /* Delays for a number of time */
+void send_value(int value); /* Send values from 0 to 255 */
 
 //*****************************************************************************
 //
@@ -71,29 +72,22 @@ main(void)
     //
     GPIOPinTypeGPIOOutput(GPIO_PORTP_BASE, GPIO_PIN_4);
 
-    reset_4x4_rgb();
-
     //
     // Loop forever.
     //
     while(1)
     {
-        for(j=0; j < 3; j++){
-
-            // Green
-            for(i=0; i < 8; i++){
-                send_0_4x4_rgb();
+        for(i=0; i<256 ; i++){
+            for(j=0; j < 16; j++){
+                // Green
+                send_value(0);
+                // Red
+                send_value(0);
+                // Blue
+                send_value(i);
             }
-            // Red
-            for(i=0; i < 8; i++){
-                send_0_4x4_rgb();
-            }
-            // Blue
-            for(i=0; i < 8; i++){
-                send_1_4x4_rgb();
-            }
-
-            reset_4x4_rgb();
+            for(j=0; j < 30; j++)
+                reset_4x4_rgb();
         }
     }
 }
@@ -120,7 +114,7 @@ void send_0_4x4_rgb(void){
 }
 
 void IN1_HIGH(void){
-    GPIOPinWrite(GPIO_PORTP_BASE, GPIO_PIN_4, 0x1);
+    GPIOPinWrite(GPIO_PORTP_BASE, GPIO_PIN_4, GPIO_PIN_4);
 }
 
 void IN1_LOW(void){
@@ -128,8 +122,16 @@ void IN1_LOW(void){
 }
 
 void delay(unsigned int j){
+        SysCtlDelay(j/9);
+}
+
+void send_value(int value){
     int i;
-    for(i = 0; i < j; i++){
-        SysCtlDelay(0);
+    for(i=0; i<8; i++){
+        if(value  & (128 >> i)){
+            send_1_4x4_rgb();
+        }else{
+            send_0_4x4_rgb();
+        }
     }
 }
