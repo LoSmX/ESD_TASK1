@@ -40,6 +40,7 @@ void IN1_HIGH(void);        /* Set IN1 HIGH */
 void IN1_LOW(void);         /* Set IN1 LOW */
 void delay(unsigned int j); /* Delays for a number of time */
 void send_value(int value); /* Send values from 0 to 255 */
+void set_pixel(int r, int g, int b); /* Set color of pixel */
 
 //*****************************************************************************
 //
@@ -75,19 +76,22 @@ main(void)
     //
     // Loop forever.
     //
-    while(1)
-    {
-        for(i=0; i<256 ; i++){
+    while(1){
+        for(i=0; i < 256 ; i++){
             for(j=0; j < 16; j++){
-                // Green
-                send_value(0);
-                // Red
-                send_value(0);
-                // Blue
-                send_value(i);
+                set_pixel(0, i, 0);
             }
-            for(j=0; j < 30; j++)
+            for(j=0; j < 30; j++){
                 reset_4x4_rgb();
+            }
+        }
+        while(i--){
+           for(j=0; j < 16; j++){
+               set_pixel(0, i, 0);
+           }
+           for(j=0; j < 30; j++){
+               reset_4x4_rgb();
+           }
         }
     }
 }
@@ -134,4 +138,13 @@ void send_value(int value){
             send_0_4x4_rgb();
         }
     }
+}
+
+void set_pixel(int r, int g, int b){
+    // Green
+    send_value(g);
+    // Red
+    send_value(r);
+    // Blue
+    send_value(b);
 }
